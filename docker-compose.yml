@@ -1,0 +1,17 @@
+name: uptimekuma
+services:
+  app:
+    image: louislam/uptime-kuma:latest
+    container_name: uptimekuma
+    restart: always
+    ports:
+      - 172.17.0.1:59068:3001
+    volumes:
+      - /var/lib/srv/$USER/docker/louislam/uptime-kuma/latest/rootfs/data:/app/data
+    networks:
+      - uptimekuma
+
+networks:
+  uptimekuma:
+    name: uptimekuma
+    external: false
