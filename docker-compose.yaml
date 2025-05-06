@@ -1,0 +1,21 @@
+name: uptimekuma
+services:
+  app:
+    image: louislam/uptime-kuma:latest
+    container_name: uptimekuma
+    hostname: ${BASE_HOST_NAME:-uptimekuma}
+    restart: always
+    pull_policy: always
+    environment:
+      - TZ=${TZ:-America/New_York}
+    ports:
+      - '172.17.0.1:59068:3001'
+    volumes:
+      - /var/lib/srv/$USER/docker/louislam/uptime-kuma/latest/rootfs/data:/app/data
+    networks:
+      - uptimekuma
+
+networks:
+  uptimekuma:
+    name: uptimekuma
+    external: false
