@@ -20,7 +20,7 @@ services:
     ports:
       - '172.17.0.1:59068:3001'
     volumes:
-      - './rootfs/data/uptimekuma:/app/data'
+      - './volumes/data/uptimekuma:/app/data'
     networks:
       - uptimekuma
 
