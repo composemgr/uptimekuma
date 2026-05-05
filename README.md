@@ -45,7 +45,7 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/uptimekuma` - Data storage
+- `./volumes/data/uptimekuma` - Data storage
 
 ## 🔍 Logging
 
