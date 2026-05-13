@@ -17,14 +17,38 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: uptimekuma-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:59068:3001'
     volumes:
       - './volumes/data/uptimekuma:/app/data'
     networks:
       - uptimekuma
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://uptimekuma-app:3001'
+      - 'cloudflare.hostname=uptimekuma.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.uptimekuma-app.entrypoints=http'
+      - 'traefik.http.routers.uptimekuma-app-secure.tls=true'
+      - 'traefik.http.routers.uptimekuma-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.uptimekuma-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.uptimekuma-app.middlewares=uptimekuma-app-https-redirect'
+      - 'traefik.http.routers.uptimekuma-app-secure.entrypoints=https'
+      - 'traefik.http.routers.uptimekuma-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.uptimekuma-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.uptimekuma-app-secure.service=uptimekuma-app'
+      - 'traefik.http.services.uptimekuma-app.loadbalancer.server.port=3001'
 
 networks:
   uptimekuma:
     name: uptimekuma
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
