@@ -1,0 +1,43 @@
+name: uptimekuma
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: louislam/uptime-kuma:2
+    container_name: uptimekuma-app
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: uptimekuma-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+    volumes:
+      - './volumes/data/uptimekuma:/app/data:z'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik'
+      - 'traefik.http.routers.uptimekuma-app.entrypoints=http'
+      - 'traefik.http.routers.uptimekuma-app.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.uptimekuma-app.middlewares=uptimekuma-app-https-redirect'
+      - 'traefik.http.middlewares.uptimekuma-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.uptimekuma-app-secure.entrypoints=https'
+      - 'traefik.http.routers.uptimekuma-app-secure.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.uptimekuma-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.uptimekuma-app-secure.service=uptimekuma-app'
+      - 'traefik.http.services.uptimekuma-app.loadbalancer.server.port=3001'
+    networks:
+      - uptimekuma
+      - traefik
+
+networks:
+  uptimekuma:
+    name: uptimekuma
+    external: false
+  traefik:
+    external: true
