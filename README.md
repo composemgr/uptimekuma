@@ -38,7 +38,6 @@ composemgr install uptimekuma
 ```shell
 TZ=America/New_York
 BASE_HOST_NAME=uptimekuma.example.com
-APP_ORG_NAME=Uptime Kuma
 ```
 
 See `docker-compose.yaml` for complete list of configurable options.
