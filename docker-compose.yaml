@@ -19,6 +19,12 @@ services:
       TZ: ${TZ:-America/New_York}
       CONTAINER_NAME: uptimekuma-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+    healthcheck:
+      test: ['CMD-SHELL', 'extra/healthcheck']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     ports:
       - '172.17.0.1:64379:3001'
     volumes:
